@@ -13,8 +13,7 @@ func main() {
 	fmt.Println("Pomóż nam uratować Kraków")
 	count := rand.Intn(10)
 	fmt.Println("Zadam Ci", count, "pytań")
-	good := 0
-	bad := 0
+	s := NewState()
 	for i := 0; i < count; i++ {
 		first := randomMultiplier()
 		second := randomMultiplier()
@@ -22,19 +21,45 @@ func main() {
 		actualResult := first * second
 		if result == actualResult {
 			fmt.Println("Dobrze!")
-			good++
+			s.markGood()
 		} else {
 			fmt.Println("Prawidłowa odpowiedź to", actualResult)
-			bad++
+			s.markBad()
 		}
 	}
 
-	fmt.Println("Udzielono", good, "odpowiedzi poprawnych, oraz", bad, "złych.")
+	fmt.Println("Udzielono", s.good, "odpowiedzi poprawnych, oraz", s.bad, "złych.")
+	if s.passing() {
+		fmt.Println("Dobrze!", name, "Udało Ci się uratować miasto!!")
+	} else {
+		fmt.Println("Niestety", name, "nie udało się uratować miasta :(")
+	}
 
 }
 
+func NewState() *State {
+	return &State{0, 0}
+}
+
+type State struct {
+	good int
+	bad  int
+}
+
+func (s *State) markGood() {
+	s.good++
+}
+
+func (s *State) markBad() {
+	s.bad++
+}
+
+func (s *State) passing() bool {
+	return float32(s.bad)/float32(s.good) <= 0.2
+}
+
 func randomMultiplier() int64 {
-	return rand.Int63n(9) + 1
+	return rand.Int63n(8) + 2
 }
 
 func getAnswer(first int64, second int64) int64 {
